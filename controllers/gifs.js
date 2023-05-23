@@ -27,6 +27,19 @@ const getGifById = async (req, res) => {
   }
 };
 
+const getGifsByTag = async (req, res) => {
+  const { tag } = req.params;
+  try {
+    const gifs = await GIF.find({ tag: tag });
+
+    return res.status(200).json({ ok: true, gifs });
+  } catch (error) {
+    return res
+      .status(503)
+      .json({ ok: false, msg: "Something bad happened..." });
+  }
+};
+
 const uploadGifFromUrl = async (req, res) => {
   const { title, url, owner, tag } = req.body;
 
@@ -60,6 +73,27 @@ const deleteById = async (req, res) => {
   }
 };
 
+const editGif = async (req, res) => {
+  const { id, newTitle } = req.body;
+
+  try {
+    const updatedGif = await GIF.findOneAndUpdate(
+      { _id: id },
+      { title: newTitle },
+      { new: true }
+    );
+
+    if (!updatedGif) {
+      return res.status(404).json({ error: "GIF not found" });
+    }
+
+    res.status(200).json({ ok: true, updatedGif });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
 const uploadGifFromLocal = async (req, res) => {
   const { title, owner, tag } = req.body;
 
@@ -81,7 +115,27 @@ const uploadGifFromLocal = async (req, res) => {
       gif,
     });
   } catch (error) {
-    console.log(error)
+    console.log(error);
+    return res
+      .status(503)
+      .json({ ok: false, msg: "Something bad happened..." });
+  }
+};
+
+const searchGifs = async (req, res) => {
+  const { q } = req.params;
+  try {
+    const gifs = await GIF.find({
+      title: {
+        $regex: new RegExp(q, "i"),
+      },
+    });
+    return res.status(201).json({
+      ok: true,
+      gifs,
+    });
+  } catch (error) {
+    console.log(error);
     return res
       .status(503)
       .json({ ok: false, msg: "Something bad happened..." });
@@ -94,4 +148,7 @@ module.exports = {
   deleteById,
   uploadGifFromUrl,
   uploadGifFromLocal,
+  getGifsByTag,
+  searchGifs,
+  editGif,
 };
