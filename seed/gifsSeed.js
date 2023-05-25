@@ -9,7 +9,6 @@ const seedDatabase = async () => {
   try {
     await GIF.deleteMany({});
     const artDataToSeed = art.data.map((gif) => {
-      console.log(gif.title);
       return {
         title: gif.title,
         url: gif.images.original.url,
@@ -20,7 +19,6 @@ const seedDatabase = async () => {
     await GIF.insertMany(artDataToSeed);
 
     const musicDataToSeed = music.data.map((gif) => {
-      console.log(gif.title);
       return {
         title: gif.title,
         url: gif.images.original.url,
@@ -31,7 +29,6 @@ const seedDatabase = async () => {
     await GIF.insertMany(musicDataToSeed);
 
     const danceDataToSeed = dance.data.map((gif) => {
-      console.log(gif.title);
       return {
         title: gif.title,
         url: gif.images.original.url,
